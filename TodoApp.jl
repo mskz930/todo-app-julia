@@ -1,6 +1,6 @@
 module TodoApp
 
-include("./DB.jl")
+include("./db/DB.jl")
 include("./model/Model.jl")
 include("./service/Service.jl")
 include("./repository/Repository.jl")
