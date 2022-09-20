@@ -2,14 +2,14 @@ using Base: @kwdef
 
 abstract type AbstractDto end
 
-struct TodoDto
+@kwdef struct TodoDto <: AbstractDto
     id::Int64
     task::String
     category_id::Int64
     isdone::Bool
 end
 
-@kwdef struct UserDto
+@kwdef struct UserDto <: AbstractDto
     Id::Int
     Name::String
     Email::String
