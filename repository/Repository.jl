@@ -5,17 +5,21 @@ include("./model/Model.jl")
 using .Model: TodoDto
 
 abstract type AbstractRepository end
-abstract type TodoRepository <: AbstractRepository end
+struct TodoRepository <: AbstractRepository end
 
-#=
-function create(::Type{TodoRepository}, dto::TodoDto)
-    todo = convert(Todo, dto)
+function save(::TodoRepository, dto::TodoDto)::Bool
+    result = DB.connect() do conn
+        sql = """insert into todos(user_id, task, isdone, created_at, updated_at) 
+            values (?, ?, ?, ?, ?)"""
+        now = Dates.now()
+        stmt = DBInterface.prepare(connn, sql)
+        DBInterface.execute(stmt, dto.user_id, dto.task, dto.isdone, now, now)
+    end
+    return result
 end
-    
 
-function convert(::Type{Todo}, dto::TodoDto)
-    
-end
-=#
+function find_by_id(::TodoRepository, id::Integer)
+    todo = DB.connect() do conn
+        sql = "select id, user_id, task, isdone"
 
 end # module
