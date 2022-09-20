@@ -10,10 +10,11 @@ using DataFrames
 
 
 abstract type AbstractService end
-abstract type LoginService <: AbstractService end
+abstract type LoginService end
+abstract type TodoService end
 
-login(::Type{LoginService}, args...) = login(LoginService(), args...);
 
+# UserDtoを取得する
 function get_user(::LoginService, dto::LoginDto)::UserDto
     try
         conn = DB.get_conn()
@@ -36,9 +37,31 @@ function get_user(::LoginService, dto::LoginDto)::UserDto
     return user
 end
 
-authenticate(user::UserDto, password::AbstractString) = user.password == password
+# パスワード認証: 
+# ok => UserDtoを返す, error => nothingを返す
+function login(::Type{LoginService}, login_dto::LoginDto)::Tuple{Bool,Union{UserDto,Nothing}}
+    user = get_user(user_id)
+    if user === nothing
+        return false, nothing
+    end
+    if user.password == login_dto.password
+       return true, user
+    else
+        return false, nothing
+    end 
+end
 
+function create(::Type{TodoService}, todo_dto::TodoDto)
+    if !exists_by_email(TodoRepository, todo_dto.email)
+        return false
+    end
+    
+    todo = Todo(todo_dto) # 
+    result = create(TodoRepository, todo)
+    
+    return result
+end
 
-
+function 
 
 end # module
