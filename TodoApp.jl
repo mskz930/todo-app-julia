@@ -8,7 +8,11 @@ include("./repository/Repository.jl")
 using HTTP
 using .Model: UserDto
 
+ROUTER = HTTP.Router()
+HTTP.register!(ROUTER, "GET", "/api/", index)
+
 function main()
+
     
 end
 

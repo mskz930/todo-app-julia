@@ -9,13 +9,21 @@ abstract type AbstractDto end
     isdone::Bool
 end
 
+"""
+    UserDto
+
+ユーザー情報用DTO
+"""
 @kwdef struct UserDto <: AbstractDto
     Id::Int
     Name::String
     Email::String
 end
 
+"""
 
+ログイン用DTO
+"""
 @kwdef struct LoginDto
     Email::String
     Password::String

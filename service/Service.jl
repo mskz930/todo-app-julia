@@ -6,6 +6,7 @@ using ..DB
 
 using .Model: UserDto, LoginDto
 using .DB
+using DBInterface
 using DataFrames
 
 
@@ -42,15 +43,16 @@ end
 function login(::Type{LoginService}, login_dto::LoginDto)::Tuple{Bool,Union{UserDto,Nothing}}
     user = get_user(user_id)
     if user === nothing
-        return false, nothing
+        return
     end
     if user.password == login_dto.password
-       return true, user
+       return
     else
-        return false, nothing
+        return user
     end 
 end
 
+# 新規ユーザーの作成
 function create(::Type{TodoService}, todo_dto::TodoDto)
     if !exists_by_email(TodoRepository, todo_dto.email)
         return false
