@@ -2,6 +2,8 @@ module DB
 
 using MySQL
 
+export MySQL, DBInterface
+
 const config = (
     host = "localhost",
     user = "root",
