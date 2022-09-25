@@ -12,11 +12,12 @@ const config = (
     port = 3306,
 )
 
-connect() = DBInterface.connect(MySQL.Connection, config.host, config.user, config.password, db=config.db, port=config.port)
+
 
 execute(conn::MySQL.Connection, sql::AbstractString, params...) = DBInterface.execute(conn, sql, params) 
 
-function execute(func::Function, conn:MySQL.Connection)
+function connect(func::Function)
+    conn = DBInterface.connect(MySQL.Connection, config.host, config.user, config.password, db=config.db, port=config.port)
     try
         func(conn)
     catch e

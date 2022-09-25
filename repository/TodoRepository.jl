@@ -1,18 +1,12 @@
-module Repository
+# TodoRepository.jl
+module TodoRepository
 
-include("./model/Model.jl")
-
-using .Model: TodoDto
-using .DB
-using DBInterface
-using DataFrame
-
-abstract type AbstractRepository end
-struct TodoRepository <: AbstractRepository end
-
+using DB
+using Model
+using TodoRepository
 
 # Todoを保存
-function save(::TodoRepository, dto::TodoDto)::Bool
+function save(dto::TodoDto)::Bool
     result = DB.connect() do conn
         sql = """insert into todos(id, user_id, task, isdone, created_at, updated_at) 
             values (?, ?, ?, ?, ?)"""
@@ -24,7 +18,7 @@ function save(::TodoRepository, dto::TodoDto)::Bool
 end
 
 # Todoを取得
-function find_by_id(::TodoRepository, user_id::Integer, id::Integer)
+function find_by_id(user_id::Integer, id::Integer)
     rows = DB.connect() do conn
         sql = "select id, category_id, task, isdone where id = ? and user_id = ?"
         stmt = DBInteraface.stmt(conn, sql)
@@ -38,7 +32,7 @@ function find_by_id(::TodoRepository, user_id::Integer, id::Integer)
     return TodoDto(row...)
 end
 
-function find(::TodoRepository, user_id::Integer)
+function find(user_id::Integer)
     rows = DB.connect() do conn
         sql = "select id, category_id, task, isdone where user_id = ?"
         stmt = DBInterface.prepare(conn, sql)
@@ -53,7 +47,7 @@ function find(::TodoRepository, user_id::Integer)
 end
 
 # TODOの更新
-function update(::TodoRepository, dto::UserDto)
+function update(todo::TodoDto)
     result = DB.conn() do conn
         sql = """update todos set
         task = ?, isdone = ?, category_id = ?
@@ -67,13 +61,12 @@ function update(::TodoRepository, dto::UserDto)
 end
 
 # TODOの削除
-function delete_by_id(::TodoRepository, id::Integer, user_id::Integer)
+function delete_by_id(id::Integer, user_id::Integer)
     result = DB.conn() do conn
         sql = "delete from todos where id = ? and user_id = ?"
         stmt = DBInterface.prepare(conn, sql)
         DBInterface.execte(stmt, (id, user_id))
     end
 end
-
 
 end # module

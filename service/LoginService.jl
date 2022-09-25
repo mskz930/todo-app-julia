@@ -1,22 +1,9 @@
-module Service
+# login.jl
 
-using ..Model
-using ..DB
-
-
-using .Model: UserDto, LoginDto
-using .DB
-using DBInterface
-using DataFrames
-
-
-abstract type AbstractService end
-abstract type LoginService end
-abstract type TodoService end
-
+using Model: UserDto, LoginDto
 
 # UserDtoを取得する
-function get_user(::LoginService, dto::LoginDto)::UserDto
+function get_user(dto::LoginDto)::UserDto
     try
         conn = DB.get_conn()
         sql = "select id, name, email from users where id = ?"
@@ -40,7 +27,7 @@ end
 
 # パスワード認証: 
 # ok => UserDtoを返す, error => nothingを返す
-function login(::Type{LoginService}, login_dto::LoginDto)::Tuple{Bool,Union{UserDto,Nothing}}
+function login(login_dto::LoginDto)::Tuple{Bool,Union{UserDto,Nothing}}
     user = get_user(user_id)
     if user === nothing
         return
@@ -51,19 +38,3 @@ function login(::Type{LoginService}, login_dto::LoginDto)::Tuple{Bool,Union{User
         return user
     end 
 end
-
-# 新規ユーザーの作成
-function create(::Type{TodoService}, todo_dto::TodoDto)
-    if !exists_by_email(TodoRepository, todo_dto.email)
-        return false
-    end
-    
-    todo = Todo(todo_dto) # 
-    result = create(TodoRepository, todo)
-    
-    return result
-end
-
-function 
-
-end # module
