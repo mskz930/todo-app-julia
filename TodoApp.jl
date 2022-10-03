@@ -1,44 +1,53 @@
 module TodoApp
 
+using HTTP, Sockets
+
 const DIR = @__DIR__
+const ROUTER = HTTP.Router()
+const tasks = Dict{String, HTTP.Server}()
 
-const paths = [".db/", "./model", "./controller", "./repository", "./service"]
+# データベース
+include("./db/DB.jl")
+using .DB
 
-for path in paths
-    !(path in LOAD_PATH) && push!(LOAD_PATH, path)
+# モデル
+include("./model/Model.jl")
+using .Model
+
+# リポジトリ
+include("./repository/UserRepository.jl")
+include("./repository/TodoRepository.jl")
+using .UserRepository, .TodoRepository
+
+# サービス
+include("./service/UserService.jl")
+include("./service/TodoService.jl")
+# include("./service/LoginService.jl")
+using .UserService, .TodoService
+
+# コントローラ
+include("./controller/UserController.jl")
+include("./controller/LoginController.jl")
+include("./controller/TodoController.jl")
+using .UserController, .LoginController, .TodoController
+
+
+HTTP.register!(ROUTER, "POST", "api/v1/todo/new", TodoController.new)
+HTTP.register!(ROUTER, "GET", "api/v1/todo", TodoControoler.get_all)
+
+function up()
+    println("start web server: http://localhost:8080/api/v1/")
+    task = HTTP.serve!(ROUTER, Sockets.localhost, 8080)
+    push!(tasks, "TodoApp" => task)
 end
 
-#=
-include("./db/DB.jl")
-include("./model/Model.jl")
-include("./repository/Repository.jl")
-include("./service/Service.jl")
-include("./controller/Controller.jl")
-=#
-
-using HTTP
-using TodoController
-
-# HTTP.register!(ROUTER, "GET", "/api/", index)
-
-const ROUTER = HTTP.Router()
-
-#=
-function main()
-    ROUTER = HTTP.Router()
-    # index routing
-    HTTP.register!(ROUTER, "GET", "/", req -> JSON.json("hello"))
-    
-    # user router
-    HTTP.register!(ROUTER, "POST", "/user/new", UserController.new)
-    
-    # user router
-    HTTP.register!(ROUTER, "GET", "/login", LoginController.login)
-    HTTP.register!(ROUTER, "GET", "/auth", LoginController.auth)
-
-
-    HTTP.serve(ROUTER, Sockets.localhost, 8080)
-end=#
+function kill()
+    global tasks
+    for key in keys(task)
+        tasks[key] |> close
+    end
+    println("shut down server")
+end
 
 end # module
 

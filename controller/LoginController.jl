@@ -1,7 +1,15 @@
 module LoginController
 
 using HTTP, JSON3
-using Model: LoginRequest
+
+using ..TodoApp: ROUTER
+using ..Model
+
+function hello(req::HTTP.Request)
+    json = JSON3.write((message="hello, world",))
+    return HTTP.Response(200, ["Content-Type" => "application/json"], json)
+end
+HTTP.register!(ROUTER, "GET", "api/v1/hello", hello)
 
 function login(req::HTTP.Request)
     return HTTP.Response(200, ["Authorization" => "email:password", "Content-Type" => "application/json"], JSON3.write((message="ok",)))

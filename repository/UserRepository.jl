@@ -1,8 +1,10 @@
 module UserRepository
 
-using DB
 using Dates
 using DataFrames
+
+using ..DB
+using ..Model
 
 export save, 
        find_by_email, 
@@ -10,7 +12,7 @@ export save,
        exists, 
        update
 
-function save(::UserRepository, dto::UserDto)::Bool
+function save(dto::UserDto)::Bool
     result = DB.connect() do conn
         sql = """insert into users(id, name, email, password, created_at, updated_at)
             values (?, ?, ?, ?, now(), now())
@@ -22,7 +24,7 @@ function save(::UserRepository, dto::UserDto)::Bool
     return result
 end
 
-function find_by_email(::UserRepository, email::AbstractString)::Union{UserDto,Nothing}
+function find_by_email(email::AbstractString)::Union{UserDto,Nothing}
     user_dto = DB.connect() do conn
         sql = "select id, name, email, password from users where email = ?"
         stmt = DBInterface.prepare(conn, sql)
@@ -37,7 +39,7 @@ function find_by_email(::UserRepository, email::AbstractString)::Union{UserDto,N
     return user_dto
 end
 
-function find_by_id(::UserRepository, id::Integer)::UserDto
+function find_by_id(id::Integer)::UserDto
     user_dto = DB.connect() do conn
         sql =  "select id, name, email, password from users where id = ?"
         stmt = DBInterface.prepare(conn, sql)
@@ -48,7 +50,7 @@ function find_by_id(::UserRepository, id::Integer)::UserDto
     return user_dto
 end
 
-function exists(::UserRepository, id::Integer)
+function exists(id::Integer)
     result = DB.connect() do  conn
         sql = "select count(*) from users where id = ?"
         stmt = DBInterface.prepare(conn, sql)
@@ -58,7 +60,7 @@ function exists(::UserRepository, id::Integer)
     return result
 end
 
-function exists(::UserRepository, email::AbstractString)
+function exists(email::AbstractString)
     result = DB.connect() do  conn
         sql = "select count(*) from users where email = ?"
         stmt = DBInterface.prepare(conn, sql)
@@ -70,7 +72,7 @@ function exists(::UserRepository, email::AbstractString)
     return result
 end
 
-function update(::UserRepository, user::UserDto)
+function update(user::UserDto)
     result = DB.connect() do conn
         sql = "update users set name = ?, password = ?, updated_at = now() where email = ?"
         stmt = DBInterface.prepare(conn, sql)

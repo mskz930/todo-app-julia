@@ -1,9 +1,9 @@
 # TodoRepository.jl
 module TodoRepository
 
-using DB
-using Model
-using TodoRepository
+using ..DB
+using ..Model
+
 
 # Todoを保存
 function save(dto::TodoDto)::Bool

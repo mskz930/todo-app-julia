@@ -2,7 +2,7 @@
 module UserController
 
 using HTTP, JSON3
-using Model: UserDto
+using ..Model: UserDto
 
 function new(req::HTTP.Request)
     user = JSON3.read(req.body, UserDto)

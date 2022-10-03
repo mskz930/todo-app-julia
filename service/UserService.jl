@@ -1,8 +1,7 @@
-# user_service.jl
 module UserService
 
-using Model: UserDto
-using Repository: UserRepository
+using ..Model: UserDto
+using ..UserRepository
 
 function new(user::UserDto)
     if !UserRepository.exists(user.email)

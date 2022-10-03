@@ -1,8 +1,9 @@
 module TodoController
 
 using HTTP
-using Model: ErrorResponse
-using TodoService
+using ..TodoApp: ROUTER
+using ..Model: ErrorResponse
+using ..TodoService
 
 function new(req::HTTP.Request)
     try
@@ -16,5 +17,6 @@ function new(req::HTTP.Request)
         return HTTP.Response(500, ["Content-Type" => "application/json"], body=JSON3.write(body))
     end
 end
+
 
 end # module

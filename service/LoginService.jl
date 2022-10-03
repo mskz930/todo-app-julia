@@ -1,9 +1,9 @@
-# login.jl
+module LoginService
 
-using Model: UserDto, LoginDto
+using ..Model: UserDto, LoginRequest
 
 # UserDtoを取得する
-function get_user(dto::LoginDto)::UserDto
+function get_user(dto::LoginRequest)::UserDto
     try
         conn = DB.get_conn()
         sql = "select id, name, email from users where id = ?"
@@ -38,3 +38,5 @@ function login(login_dto::LoginDto)::Tuple{Bool,Union{UserDto,Nothing}}
         return user
     end 
 end
+
+end # module
